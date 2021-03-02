@@ -1,0 +1,73 @@
+---
+- name: Update all packages to their latest version
+  apt:
+    name: "*"
+    update_cache: yes
+    autoremove: yes
+    state: latest
+
+- name: Install fail2ban
+  apt:
+    name: fail2ban
+
+- name: Install ufw
+  apt:
+    name: ufw
+
+- name: Add group deploy
+  ansible.builtin.group:
+    name: deploy
+    state: present
+
+- name: Add user deploy
+  ansible.builtin.user:
+    name: deploy
+    groups: sudo,deploy
+    password: "{{ lookup('password', 'credentials/' + inventory_hostname + '/deploy.txt length=32 encrypt=md5_crypt') }}"
+    shell: /bin/bash
+    state: present
+
+- name: Allow admin users to sudo without a password
+  ansible.builtin.lineinfile:
+    dest: /etc/sudoers
+    state: present
+    regexp: "^%sudo"
+    line: "%sudo ALL=(ALL:ALL) NOPASSWD: ALL"
+
+- name: Create .ssh directory
+  ansible.builtin.file:
+    path: /home/deploy/.ssh/
+    state: directory
+    owner: deploy
+    group: deploy
+    mode: "700"
+
+- name: Copy authorized keys from root
+  ansible.builtin.copy:
+    remote_src: yes
+    src: /root/.ssh/authorized_keys
+    dest: /home/deploy/.ssh/authorized_keys
+    owner: deploy
+    group: deploy
+    mode: "400"
+
+- name: UFW allow OpenSSH
+  community.general.ufw:
+    rule: allow
+    name: OpenSSH
+
+- name: UFW allow HTTP
+  community.general.ufw:
+    rule: allow
+    port: "80"
+    proto: tcp
+
+- name: UFW allow HTTPS
+  community.general.ufw:
+    rule: allow
+    port: "443"
+    proto: tcp
+  
+- name: Enable UFW
+  community.general.ufw:
+    state: enabled

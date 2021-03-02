@@ -1,0 +1,58 @@
+---
+- name: Accept SSH fingerprint
+  hosts: all
+  gather_facts: no
+  tasks:
+  - name: Accept SSH host key
+    connection: local
+    become: false
+    shell: |
+      ssh-keygen -F {{ hostvars[inventory_hostname]["ipv4"] }} || 
+      ssh-keyscan {{ hostvars[inventory_hostname]["ipv4"] }} >> ~/.ssh/known_hosts
+    register: known_hosts_script
+    changed_when: "'found' not in known_hosts_script.stdout"
+
+- name: Basic setup
+  hosts: all
+  user: root
+  roles:
+    - base
+
+- name: Set up unattended upgrades
+  hosts: all
+  user: root
+  roles:
+  - role: jnv.unattended-upgrades
+    unattended_origins_patterns:
+    - 'origin=Debian,codename=${distro_codename},label=Debian-Security'
+
+- name: Hardening
+  user: root
+  hosts: all
+  collections:
+    - devsec.hardening
+  roles:
+    - os_hardening
+    - ssh_hardening
+  vars:
+    ssh_allow_users: deploy
+    sftp_enabled: true
+    ssh_host_key_algorithms:
+      - ssh-ed25519
+      - ssh-ed25519-cert-v01@openssh.com
+      - rsa-sha2-256
+      - rsa-sha2-512
+    ssh_macs:
+      - hmac-sha2-512-etm@openssh.com
+      - hmac-sha2-256-etm@openssh.com
+      - umac-128-etm@openssh.com
+    ssh_ciphers:
+      - chacha20-poly1305@openssh.com
+      - aes256-gcm@openssh.com
+      - aes128-gcm@openssh.com
+    ssh_kex:
+      - curve25519-sha256 
+      - curve25519-sha256@libssh.org
+    sysctl_overwrite:
+      # Enable IPv4 traffic forwarding for containers.
+      net.ipv4.ip_forward: 1

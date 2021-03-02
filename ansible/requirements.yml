@@ -1,0 +1,7 @@
+---
+roles:
+  - name: jnv.unattended-upgrades
+
+collections:
+  - name: devsec.hardening
+  - name: containers.podman
