@@ -2,8 +2,8 @@
 - name: Update all packages to their latest version
   ansible.builtin.apt:
     name: "*"
-    update_cache: yes
-    autoremove: yes
+    update_cache: true
+    autoremove: true
     state: latest
 
 - name: Install fail2ban
@@ -44,7 +44,7 @@
 
 - name: Copy authorized keys from root
   ansible.builtin.copy:
-    remote_src: yes
+    remote_src: true
     src: /root/.ssh/authorized_keys
     dest: /home/deploy/.ssh/authorized_keys
     owner: deploy
@@ -67,7 +67,7 @@
     rule: allow
     port: "443"
     proto: tcp
-  
+
 - name: Enable UFW
   community.general.ufw:
     state: enabled

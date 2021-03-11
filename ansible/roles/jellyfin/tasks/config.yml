@@ -80,6 +80,6 @@
   ansible.builtin.file:
     path: /srv/jellyfin/config/
     state: directory
-    recurse: yes
+    recurse: true
     owner: deploy
     group: deploy

@@ -1,13 +1,13 @@
 ---
 - name: Accept SSH fingerprint
   hosts: all
-  gather_facts: no
+  gather_facts: false
   tasks:
   - name: Accept SSH host key
     connection: local
     become: false
     shell: |
-      ssh-keygen -F {{ hostvars[inventory_hostname]["ipv4"] }} || 
+      ssh-keygen -F {{ hostvars[inventory_hostname]["ipv4"] }} ||
       ssh-keyscan {{ hostvars[inventory_hostname]["ipv4"] }} >> ~/.ssh/known_hosts
     register: known_hosts_script
     changed_when: "'found' not in known_hosts_script.stdout"
@@ -47,20 +47,20 @@
       - aes256-gcm@openssh.com
       - aes128-gcm@openssh.com
     ssh_kex:
-      - curve25519-sha256 
+      - curve25519-sha256
       - curve25519-sha256@libssh.org
     sysctl_overwrite:
       # Enable IPv4 traffic forwarding for containers
       net.ipv4.ip_forward: 1
   # Required to prevent failure when general tag is not selected
-  ignore_errors: yes
+  ignore_errors: true
   tags:
     - general
 
 - name: Jellyfin setup
   hosts: all
   remote_user: deploy
-  become: yes
+  become: true
   become_user: root
   roles:
     - jellyfin

@@ -4,8 +4,9 @@ root = true
 end_of_line = lf
 insert_final_newline = true
 
-[*.yaml]
+[*.{yml,yaml}]
 indent_size = 2
+indent_style = space
 
 [*.{tf,tfvars,tpl}]
 indent_size = 2

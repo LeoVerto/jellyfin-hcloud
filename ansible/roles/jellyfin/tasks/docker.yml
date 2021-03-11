@@ -6,7 +6,7 @@
 - name: Add user to docker group
   ansible.builtin.user:
     name: deploy
-    append: yes
+    append: true
     groups: docker
 
 - name: Install docker-compose
