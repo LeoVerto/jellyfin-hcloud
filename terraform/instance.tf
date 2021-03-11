@@ -22,9 +22,15 @@ resource "hcloud_server" "server" {
       HCLOUD_TOKEN = var.hcloud_token
     }
     command = <<-EOF
-        ansible-galaxy install -r roles/requirements.yml
-        ansible-playbook -i hcloud.yml -e 'ansible_python_interpreter=/usr/bin/python3' --extra-vars="dns_fullname=${var.dns_fullname}" setup-jellyfin.yml
-        EOF
+      ansible-galaxy install -r roles/requirements.yml
+      ansible-playbook -i hcloud.yml -e 'ansible_python_interpreter=/usr/bin/python3' --extra-vars="dns_fullname=${var.dns_fullname}" setup-jellyfin.yml
+      EOF
+  }
+
+  # Remove IP from SSH known_hosts
+  provisioner "local-exec" {
+    when    = destroy
+    command = "ssh-keygen -R ${self.ipv4_address}"
   }
 }
 
