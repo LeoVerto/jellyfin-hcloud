@@ -1,7 +1,7 @@
 resource "hcloud_server" "server" {
     name = "jellyfin-${local.name}"
     image = "debian-10"
-    server_type = "cx11"
+    server_type = var.server_type
     location = "nbg1"
     backups = "false"
     ssh_keys = [hcloud_ssh_key.user.id]
@@ -22,8 +22,8 @@ resource "hcloud_server" "server" {
             HCLOUD_TOKEN = var.hcloud_token
         }
         command = <<-EOF
-        ansible-galaxy install -r requirements.yml
-        ansible-playbook -i hcloud.yml -e 'ansible_python_interpreter=/usr/bin/python3' setup-jellyfin.yml
+        ansible-galaxy install -r roles/requirements.yml
+        ansible-playbook -i hcloud.yml -e 'ansible_python_interpreter=/usr/bin/python3' --extra-vars="dns_fullname=${var.dns_fullname}" setup-jellyfin.yml
         EOF
     }
 }
