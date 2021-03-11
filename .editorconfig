@@ -6,3 +6,7 @@ insert_final_newline = true
 
 [*.yaml]
 indent_size = 2
+
+[*.{tf,tfvars,tpl}]
+indent_size = 2
+indent_style = space
