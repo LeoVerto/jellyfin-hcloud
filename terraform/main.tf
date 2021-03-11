@@ -1,11 +1,3 @@
-variable "hcloud_token" {}
-variable "public_key" {}
-variable "server_type" {}
-variable "hetznerdns_token" {}
-variable "dns_zone" {}
-variable "dns_name" {}
-variable "dns_fullname" {}
-
 terraform {
   required_providers {
     hcloud = {
