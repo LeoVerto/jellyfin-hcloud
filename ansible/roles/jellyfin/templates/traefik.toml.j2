@@ -1,0 +1,39 @@
+[log]
+  level = "ERROR"
+  filePath = "/traefik.log"
+
+[docker]
+  network = "traefik"
+  exposedbydefault = false
+
+[api]
+  insecure = false
+
+[providers]
+  [providers.docker]
+    endpoint = "unix:///var/run/docker.sock"
+  [providers.file]
+    filename = "/traefik-provider.toml"
+
+[entryPoints]
+  # Standard HTTP redirects to HTTPS
+  [entryPoints.http]
+    address = ":80"
+    [entryPoints.http.http]
+      [entryPoints.http.http.redirections]
+        [entryPoints.http.http.redirections.entrypoint]
+          to = "https"
+          scheme = "https"
+  # Standard HTTPS
+  [entryPoints.https]
+    address = ":443"
+
+# Enable ACME (Let's Encrypt): automatic SSL.
+[certificatesResolvers.leresolver.acme]
+  email = "admin@{{ dns_fullname }}"
+  storage = "acme.json"
+  # Use HTTP-01 ACME challenge
+  [certificatesResolvers.leresolver.acme.httpChallenge]
+    entryPoint = "http"
+
+[retry]

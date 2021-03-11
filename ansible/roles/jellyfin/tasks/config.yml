@@ -1,0 +1,85 @@
+---
+- name: Create cache folder
+  ansible.builtin.file:
+    path: /srv/jellyfin/jellyfin/cache
+    state: directory
+    owner: deploy
+    group: deploy
+
+- name: Create config folder
+  ansible.builtin.file:
+    path: /srv/jellyfin/jellyfin/config
+    state: directory
+    owner: deploy
+    group: deploy
+
+- name: Create media folder
+  ansible.builtin.file:
+    path: /srv/jellyfin/jellyfin/media
+    state: directory
+    owner: deploy
+    group: deploy
+
+- name: Create transcodes folder
+  ansible.builtin.file:
+    path: /srv/jellyfin/jellyfin/transcodes
+    state: directory
+    owner: deploy
+    group: deploy
+
+- name: Copy docker compose template
+  ansible.builtin.template:
+    src: docker-compose.yml.j2
+    dest: /srv/jellyfin/docker-compose.yml
+    owner: deploy
+    group: deploy
+
+- name: Copy docker compose template
+  ansible.builtin.template:
+    src: docker-compose.yml.j2
+    dest: /srv/jellyfin/docker-compose.yml
+    owner: deploy
+    group: deploy
+
+- name: Copy traefik config template
+  ansible.builtin.template:
+    src: traefik.toml.j2
+    dest: /srv/jellyfin/traefik.toml
+    owner: deploy
+    group: deploy
+
+- name: Copy traefik provider config
+  ansible.builtin.template:
+    src: traefik-provider.toml
+    dest: /srv/jellyfin/traefik-provider.toml
+    owner: deploy
+    group: deploy
+
+- name: Create acme.json
+  ansible.builtin.file:
+    path: /srv/jellyfin/acme.json
+    state: touch
+    owner: deploy
+    group: deploy
+    mode: "600"
+
+- name: Create traefik.log
+  ansible.builtin.file:
+    path: /srv/jellyfin/traefik.log
+    state: touch
+    owner: deploy
+    group: deploy
+    mode: "600"
+
+- name: Copy Jellyfin config folder
+  ansible.posix.synchronize:
+    src: ../jellyfin-config/
+    dest: /srv/jellyfin/jellyfin/config/
+
+- name: Set config dir ownership
+  ansible.builtin.file:
+    path: /srv/jellyfin/config/
+    state: directory
+    recurse: yes
+    owner: deploy
+    group: deploy

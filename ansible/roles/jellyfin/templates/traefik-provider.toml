@@ -1,0 +1,21 @@
+# Set secure options by disabling insecure older TLS/SSL versions
+# and insecure ciphers. SNIStrict disabled leaves TLS1.0 open.
+# If you have problems with older clients, you can may need to relax
+# these minimums. This configuration will give you an A+ SSL security
+# score supporting TLS1.2 and TLS1.3
+[tls.options]
+  [tls.options.default]
+    sniStrict = true
+    minVersion = "VersionTLS12"
+    curvePreferences = [
+      "secp521r1",
+      "secp384r1"
+    ]
+    cipherSuites = [
+      "TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384",
+      "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384",
+      "TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305",
+      "TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305",
+      "TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256",
+      "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256"
+    ]

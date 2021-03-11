@@ -1,0 +1,57 @@
+version: '2.4'
+services:
+  traefik:
+    container_name: traefik
+    image: traefik:chevrotin # the chevrotin tag refers to v2.2.x
+    restart: unless-stopped
+    volumes:
+      # So that Traefik can listen to the Docker events (read-only)
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      # TOML Configuration with global options
+      - ./traefik.toml:/traefik.toml
+      # Configuration for the file provider (needed for host networking and default TLS Options)
+      - ./traefik-provider.toml:/traefik-provider.toml
+      # LetsEncrypt ACME Configuration
+      - ./acme.json:/acme.json
+      # Log File (optional)
+      - ./traefik.log:/traefik.log
+    ports:
+      - 80:80
+      - 443:443
+
+  jellyfin:
+    container_name: jellyfin
+    image: jellyfin/jellyfin:10.7.0
+    restart: always
+    user: 1000:1000
+    volumes:
+      - ./jellyfin/config:/config
+      - ./jellyfin/cache:/cache
+      - ./jellyfin/transcodes:/transcodes
+      - ./jellyfin/media:/media
+    labels:
+      - "traefik.enable=true"
+      ## Http router
+      - "traefik.http.routers.jellyfin.entryPoints=https"
+      - "traefik.http.routers.jellyfin.rule=Host(`{{ dns_fullname }}`)"
+      - "traefik.http.routers.jellyfin.tls=true"
+      - "traefik.http.routers.jellyfin.tls.certResolver=leresolver"
+      - "traefik.http.routers.jellyfin.tls.domains={{ dns_fullname }}"
+      ## Middleware
+      - "traefik.http.routers.jellyfin.middlewares=jellyfin-mw"
+      - "traefik.http.middlewares.jellyfin-mw.headers.customResponseHeaders.X-Robots-Tag=noindex,nofollow,nosnippet,noarchive,notranslate,noimageindex"
+      - "traefik.http.middlewares.jellyfin-mw.headers.SSLRedirect=true"
+      - "traefik.http.middlewares.jellyfin-mw.headers.SSLHost={{ dns_fullname }}"
+      - "traefik.http.middlewares.jellyfin-mw.headers.SSLForceHost=true"
+      - "traefik.http.middlewares.jellyfin-mw.headers.STSSeconds=315360000"
+      - "traefik.http.middlewares.jellyfin-mw.headers.STSIncludeSubdomains=true"
+      - "traefik.http.middlewares.jellyfin-mw.headers.STSPreload=false"
+      - "traefik.http.middlewares.jellyfin-mw.headers.forceSTSHeader=true"
+      - "traefik.http.middlewares.jellyfin-mw.headers.contentTypeNosniff=true"
+      - "traefik.http.middlewares.jellyfin-mw.headers.browserXSSFilter=true"
+      - "traefik.http.middlewares.jellyfin-mw.headers.customFrameOptionsValue='ALLOW-FROM https://{{ dns_fullname }}'"
+      - "traefik.http.middlewares.jellyfin-mw.headers.referrerPolicy=same-origin"
+      - "traefik.http.middlewares.jellyfin-mw.headers.contentSecurityPolicy=default-src https: data: blob:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' blob:; worker-src 'self' blob:; connect-src 'self'; object-src 'none'; frame-ancestors 'self';"
+      ## HTTP Service"
+      - "traefik.http.services.jellyfin-svc.loadBalancer.server.port=8096"
+      - "traefik.http.services.jellyfin-svc.loadBalancer.passHostHeader=true"

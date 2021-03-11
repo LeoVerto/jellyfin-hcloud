@@ -1,17 +1,17 @@
 ---
 - name: Update all packages to their latest version
-  apt:
+  ansible.builtin.apt:
     name: "*"
     update_cache: yes
     autoremove: yes
     state: latest
 
 - name: Install fail2ban
-  apt:
+  ansible.builtin.apt:
     name: fail2ban
 
 - name: Install ufw
-  apt:
+  ansible.builtin.apt:
     name: ufw
 
 - name: Add group deploy
@@ -71,3 +71,10 @@
 - name: Enable UFW
   community.general.ufw:
     state: enabled
+
+- name: Set up unattended upgrades
+  ansible.builtin.import_role:
+    name: jnv.unattended-upgrades
+  vars:
+    unattended_origins_patterns:
+      - 'origin=Debian,codename=${distro_codename},label=Debian-Security'

@@ -1,0 +1,19 @@
+---
+- name: Set up docker
+  ansible.builtin.import_role:
+    name: crivetimihai.virtualization.docker
+
+- name: Add user to docker group
+  ansible.builtin.user:
+    name: deploy
+    append: yes
+    groups: docker
+
+- name: Install docker-compose
+  ansible.builtin.apt:
+    name: docker-compose
+
+- name: Run docker compose up
+  community.docker.docker_compose:
+    project_src: /srv/jellyfin/
+    recreate: always

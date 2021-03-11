@@ -11,20 +11,16 @@
       ssh-keyscan {{ hostvars[inventory_hostname]["ipv4"] }} >> ~/.ssh/known_hosts
     register: known_hosts_script
     changed_when: "'found' not in known_hosts_script.stdout"
+  tags:
+    - general
 
-- name: Basic setup
+- name: Base setup
   hosts: all
   user: root
   roles:
     - base
-
-- name: Set up unattended upgrades
-  hosts: all
-  user: root
-  roles:
-  - role: jnv.unattended-upgrades
-    unattended_origins_patterns:
-    - 'origin=Debian,codename=${distro_codename},label=Debian-Security'
+  tags:
+    - general
 
 - name: Hardening
   user: root
@@ -54,5 +50,19 @@
       - curve25519-sha256 
       - curve25519-sha256@libssh.org
     sysctl_overwrite:
-      # Enable IPv4 traffic forwarding for containers.
+      # Enable IPv4 traffic forwarding for containers
       net.ipv4.ip_forward: 1
+  # Required to prevent failure when general tag is not selected
+  ignore_errors: yes
+  tags:
+    - general
+
+- name: Jellyfin setup
+  hosts: all
+  remote_user: deploy
+  become: yes
+  become_user: root
+  roles:
+    - jellyfin
+  tags:
+    - jellyfin
