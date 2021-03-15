@@ -1,0 +1,11 @@
+---
+- name: Update all packages to their latest version
+  ansible.builtin.apt:
+    name: "*"
+    update_cache: true
+    autoremove: true
+    state: latest
+
+- name: Install fail2ban
+  ansible.builtin.apt:
+    name: fail2ban

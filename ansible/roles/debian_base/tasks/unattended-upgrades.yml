@@ -1,0 +1,7 @@
+---
+- name: Set up unattended upgrades
+  ansible.builtin.import_role:
+    name: jnv.unattended-upgrades
+  vars:
+    unattended_origins_patterns:
+      - 'origin=Debian,codename=${distro_codename},label=Debian-Security'

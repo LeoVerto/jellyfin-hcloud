@@ -1,0 +1,9 @@
+---
+- name: Harden system
+  ansible.builtin.import_role:
+    name: devsec.hardening.os_hardening
+  tags: hardening
+- name: Harden OpenSSH
+  ansible.builtin.import_role:
+    name: devsec.hardening.ssh_hardening
+  tags: hardening

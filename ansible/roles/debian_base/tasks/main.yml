@@ -1,0 +1,7 @@
+---
+- include: packages.yml
+- include: user.yml
+- include: firewall.yml
+- include: hardening.yml
+- include: unattended-upgrades.yml
+  when: install_docker

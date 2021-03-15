@@ -1,0 +1,12 @@
+- name: Install ufw
+  ansible.builtin.apt:
+    name: ufw
+
+- name: UFW allow OpenSSH
+  community.general.ufw:
+    rule: allow
+    name: OpenSSH
+
+- name: Enable UFW
+  community.general.ufw:
+    state: enabled

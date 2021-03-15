@@ -1,19 +1,4 @@
 ---
-- name: Update all packages to their latest version
-  ansible.builtin.apt:
-    name: "*"
-    update_cache: true
-    autoremove: true
-    state: latest
-
-- name: Install fail2ban
-  ansible.builtin.apt:
-    name: fail2ban
-
-- name: Install ufw
-  ansible.builtin.apt:
-    name: ufw
-
 - name: Add group deploy
   ansible.builtin.group:
     name: deploy
@@ -50,31 +35,3 @@
     owner: deploy
     group: deploy
     mode: "400"
-
-- name: UFW allow OpenSSH
-  community.general.ufw:
-    rule: allow
-    name: OpenSSH
-
-- name: UFW allow HTTP
-  community.general.ufw:
-    rule: allow
-    port: "80"
-    proto: tcp
-
-- name: UFW allow HTTPS
-  community.general.ufw:
-    rule: allow
-    port: "443"
-    proto: tcp
-
-- name: Enable UFW
-  community.general.ufw:
-    state: enabled
-
-- name: Set up unattended upgrades
-  ansible.builtin.import_role:
-    name: jnv.unattended-upgrades
-  vars:
-    unattended_origins_patterns:
-      - 'origin=Debian,codename=${distro_codename},label=Debian-Security'
