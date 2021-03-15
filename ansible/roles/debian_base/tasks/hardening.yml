@@ -2,8 +2,31 @@
 - name: Harden system
   ansible.builtin.import_role:
     name: devsec.hardening.os_hardening
+  vars:
+    sysctl_overwrite:
+      net.ipv4.ip_forward: "{{ install_docker }}"
+
   tags: hardening
 - name: Harden OpenSSH
   ansible.builtin.import_role:
     name: devsec.hardening.ssh_hardening
+  vars:
+    ssh_allow_users: deploy
+    sftp_enabled: true
+    ssh_host_key_algorithms:
+      - ssh-ed25519
+      - ssh-ed25519-cert-v01@openssh.com
+      - rsa-sha2-256
+      - rsa-sha2-512
+    ssh_macs:
+      - hmac-sha2-512-etm@openssh.com
+      - hmac-sha2-256-etm@openssh.com
+      - umac-128-etm@openssh.com
+    ssh_ciphers:
+      - chacha20-poly1305@openssh.com
+      - aes256-gcm@openssh.com
+      - aes128-gcm@openssh.com
+    ssh_kex:
+      - curve25519-sha256
+      - curve25519-sha256@libssh.org
   tags: hardening
