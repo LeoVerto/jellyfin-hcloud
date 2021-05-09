@@ -3,3 +3,9 @@
   community.docker.docker_compose:
     project_src: /srv/jellyfin/
     recreate: always
+# Traefik will fail to obtain a certificate from Let's Encrypt until the DNS records have been created and propagated.
+# As a workaround we use systemd to schedule a restart of traefik in the near future when the playbook
+# has completed and Terraform has created the DNS resources.
+- name: Schedule traefik restart in two minutes
+  when: restart_traefik|bool
+  ansible.builtin.command: systemd-run --on-active=30 docker restart traefik

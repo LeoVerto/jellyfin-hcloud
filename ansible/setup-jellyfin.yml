@@ -31,5 +31,7 @@
   become_user: root
   roles:
     - jellyfin
+  vars:
+    - restart_traefik: true
   tags:
     - jellyfin
