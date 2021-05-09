@@ -12,7 +12,7 @@ variable "dns_name" {}
 # Full domain name, e.g. "jellyfin.example.com"
 variable "dns_fullname" {}
 
-# Server type to use for the instance. Defaults to smalles possible.
+# Server type to use for the instance. Defaults to smallest possible.
 variable "server_type" {
   default = "cx11"
 }
