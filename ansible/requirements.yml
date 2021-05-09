@@ -3,5 +3,6 @@ roles:
   - name: jnv.unattended-upgrades
 
 collections:
+  - name: hetzner.hcloud
   - name: devsec.hardening
   - name: crivetimihai.virtualization
