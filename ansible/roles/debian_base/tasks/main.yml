@@ -1,8 +1,8 @@
 ---
-- include: packages.yml
-- include: user.yml
-- include: firewall.yml
-- include: hardening.yml
-- include: unattended-upgrades.yml
-- include: docker.yml
+- include_tasks: packages.yml
+- include_tasks: user.yml
+- include_tasks: firewall.yml
+- include_tasks: hardening.yml
+- include_tasks: unattended-upgrades.yml
+- include_tasks: docker.yml
   when: install_docker|bool
