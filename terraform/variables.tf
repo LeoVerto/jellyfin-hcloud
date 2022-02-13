@@ -1,7 +1,11 @@
 # Hetzner cloud token for the project you want to create the server in.
-variable "hcloud_token" {}
+variable "hcloud_token" {
+  sensitive = true
+}
 # Hetzner DNS API token.
-variable "hetznerdns_token" {}
+variable "hetznerdns_token" {
+  sensitive = true
+}
 # Public ssh key to add to the server.
 variable "public_key" {}
 
