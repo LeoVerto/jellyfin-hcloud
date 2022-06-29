@@ -1,0 +1,38 @@
+name: 'Terraform'
+
+on:
+  push:
+    paths:
+      - 'terraform/**'
+  pull_request:
+    paths:
+      - 'terraform/**'
+
+permissions:
+  contents: read
+
+jobs:
+  terraform:
+    name: 'Lint and validate Terraform config'
+    runs-on: ubuntu-latest
+
+    steps:
+    # Checkout the repository to the GitHub Actions runner
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    # Install the latest version of Terraform CLI
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v1
+
+    # Initialize a new Terraform working directory but do not use any backend
+    - name: Terraform Init
+      run: terraform init -backend=false
+
+    # Check that all Terraform configuration files adhere to a canonical format
+    - name: Terraform Format
+      run: terraform fmt -check
+
+    # Validate Terraform configuration files syntax and consistency
+    - name: Terraform Validate
+      run: terraform validate
